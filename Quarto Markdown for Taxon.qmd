@@ -1,0 +1,532 @@
+---
+title: "Taxometrics Analysis"
+format: html
+editor: visual
+---
+
+## Taxometrics Analysis of Sliderbar
+
+Below is the results for the Taxometrics Analysis of the Sliderbar inventory as as measurement for self-reported personality. The aim of the sliderbar is to investigate a bipolar conceptualisation of personality through fully labelled response scales.
+
+## Setup
+
+First, we will load the dataset and required packages. For more detail of the dataset please see Monaghan, 2023 (associated paper).
+
+```{r Dataset}
+
+data <- read.csv("~/OneDrive - Australian National University/Research/Dimensional Models of personality disorder/2021 Grants/Smithson/Data/FinalData_Numeric.csv")
+```
+
+Next we will load the [RTaxometrics](https://cran.r-project.org/web/packages/RTaxometrics/index.html) packag, with a special thanks to John Ruscio and Shirley Wang for developing and maintaining this rad package. see Ruscio 2017.
+
+```{r load package}
+# install.packages("RTaxometrics") if nessesary
+library("RTaxometrics")
+```
+
+## Design
+
+-   Check Data appropriateness using automated function and run Taxometrics
+
+-   Then, run this with both groups defined by theory. That is, using Personality Severity to make the cuts and base rates.
+
+## Data Appropriateness
+
+First, we will check the appropriateness of the data for Si Taxometrics.
+
+### SI
+
+```{r Check}
+SI_data <- data[110:114]
+CheckData(SI_data)
+# assign base rate based on CheckDataOutput
+SI_data <- ClassifyCases(SI_data, p=0.4448622)
+```
+
+###IP We will next check the appropriateness of the data for IP Taxometrics.
+
+```{r Check}
+IP_data <- data[115:121]
+CheckData(IP_data)
+# assign base rate based on CheckDataOutput
+IP_data <- ClassifyCases(IP_data, p=0.1779449)
+```
+
+### AS
+
+We will next check the appropriateness of the data for AS Taxometrics.
+
+```{r Check}
+AS_data <- data[122:126]
+CheckData(AS_data)
+# assign base rate based on CheckDataOutput
+AS_data <- ClassifyCases(AS_data, p=0.2280702)
+```
+
+### EI
+
+We will next check the appropriateness of the data for EI Taxometrics.
+
+Incorrect Number of Dimensions for Taxometrics?
+
+```{r Check}
+EI_data <- data[127:128]
+CheckData(EI_data)
+# assign base rate based on CheckDataOutput
+#EI_data <- ClassifyCases(EI_data, p=0.2280702)
+```
+
+### SG
+
+We will next check the appropriateness of the data for EI Taxometrics.
+
+```{r Check SG}
+SG_data <- data[129:133]
+CheckData(SG_data)
+# assign base rate based on CheckDataOutput
+SG_data <- ClassifyCases(SG_data, p=0.3483709)
+```
+
+### AI
+
+We will next check the appropriateness of the data for EI Taxometrics.
+
+```{r Check AI}
+AI_data <- data[134:137]
+CheckData(AI_data)
+# assign base rate based on CheckDataOutput
+SG_data <- ClassifyCases(AI_data, p=0.2293233)
+```
+
+### AAD
+
+We will next check the appropriateness of the data for EI Taxometrics.
+
+```{r Check AAD}
+AAD_data <- data[c(138, 143, 148)]
+CheckData(AAD_data)
+# assign base rate based on CheckDataOutput
+AAD_data <- ClassifyCases(AAD_data, p=0.1328321)
+```
+
+### AARA
+
+We will next check the appropriateness of the data for EI Taxometrics.
+
+```{r Check AARA}
+AARA_data <- data[153:158]
+CheckData(AARA_data)
+# assign base rate based on CheckDataOutput
+AARA_data <- ClassifyCases(AARA_data, p=0.209799)
+```
+
+### OC
+
+We will next check the appropriateness of the data for EI Taxometrics.
+
+```{r Check}
+SG_data <- data[129:133]
+CheckData(SG_data)
+# assign base rate based on CheckDataOutput
+SG_data <- ClassifyCases(SG_data, p=0.2280702)
+```
+
+### NSE
+
+We will next check the appropriateness of the data for EI Taxometrics.
+
+```{r Check}
+SG_data <- data[129:133]
+CheckData(SG_data)
+# assign base rate based on CheckDataOutput
+SG_data <- ClassifyCases(SG_data, p=0.2280702)
+```
+
+### SCI
+
+We will next check the appropriateness of the data for EI Taxometrics.
+
+```{r Check}
+SG_data <- data[129:133]
+CheckData(SG_data)
+# assign base rate based on CheckDataOutput
+SG_data <- ClassifyCases(SG_data, p=0.2280702)
+```
+
+## Run Taxometrics
+
+Step1: check for each symptom cluster
+
+When using **MAXSLOPE**, pairs of putative group indicatorsare plotted against one another, and a smoothedregression line is fitted to the scatterplot. In con-trast to a strictly linear regression approach,smoothing allows the slope of the regression line,which indicates the strength of associationbetween the two variables, to vary nonlinearlyalong the range of x. If a taxon is present andthe effect size separating the two groups isadequate for both variables, then a nonlinearity(increase or decrease) in the regression slope isobserved, which is maximized near the level ofindicator x that best differentiates between group
+
+### SI Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of SI, cache = T}
+
+SI_Taxo <-
+  RunTaxometrics(SI_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+
+```
+
+### IP Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of IP, cache = T}
+
+RunTaxometrics(IP_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+
+```
+
+### IP Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+### AS Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of IP, cache = T}
+
+RunTaxometrics(AS_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+
+```
+
+### EI Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of EI, cache = T}
+
+RunTaxometrics(EI_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+
+```
+
+### SG Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of IP, cache = T}
+
+RunTaxometrics(SG_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+
+```
+
+### AI Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of AI, cache = T}
+
+RunTaxometrics(AI_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+```
+
+### AD Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of AD, cache = T}
+
+RunTaxometrics(AD_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+```
+
+### AAD Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of AAD, cache = T}
+
+RunTaxometrics(AAD_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+```
+
+### AARA Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of AARA, cache = T}
+
+RunTaxometrics(AARA_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+```
+
+### OC Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of OC, cache = T}
+
+RunTaxometrics(OC_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+```
+
+### NSE Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of NSE, cache = T}
+
+RunTaxometrics(NSE_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+```
+
+### SD Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of SD, cache = T}
+
+RunTaxometrics(SD_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+```
+
+### SCI Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of SCI, cache = T}
+
+RunTaxometrics(SCI_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+```
+
+### TSI Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of TSI, cache = T}
+
+RunTaxometrics(TSI_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+
+```
+
+### NA Symptom cluster
+
+Note: CCFI values can range from 0 (dimensional) to 1 (categorical). The further a CCFI is from .50, the stronger the result.
+
+```{r taxometric analysis of NA, cache = T}
+
+RunTaxometrics(NA_data,
+               seed=1234,                     # Random number seed for reproducibility
+               n.pop=100000,                  # comparison population size
+               n.samples=100,                 # number of comparison datasets
+               reps=10,                       # Number of reps if unclear results
+               MAMBAC=TRUE,                   # Ask for MAMBAC
+               assign.MAMBAC= 2,              # Style: 1 = variable pairs, 2 = sums
+               n.cuts=25,                     # number of cuts to analyse
+               n.end=25,                      # extreme counts
+               MAXEIG=TRUE,                   # Ask for Maxeig
+               assign.MAXEIG=3,               # Style: 1 = variable pairs, 2 = restricted pairs, 3 = sums 
+               windows=30,                    # MAXEIG windows
+               LMode=TRUE,                    # Ask for LMode
+               mode.l=-0.001,                 # l position
+               mode.r=0.001,                  # r position
+               MAXSLOPE=TRUE)                 # Ask for Maxslope
+
+```
